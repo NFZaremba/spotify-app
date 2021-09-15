@@ -1,3 +1,7 @@
-import Button from "./Button";
+import Header from "./Header";
+import Section from "./Section";
+import Artists from "./Artists";
+import TrackList from "./TrackList";
+import Playlists from "./Playlists";
 
-export { Button };
+export { Header, Section, Artists, TrackList, Playlists };

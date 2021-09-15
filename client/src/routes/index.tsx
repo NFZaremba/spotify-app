@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { Profile } from "../pages";
-import { logout } from "../services/spotify";
+import Logout from "../pages/Logout";
 import ScrollToTop from "../shared/utils/scrollToTop";
 
 const Routes = () => {
   return (
     <Router>
       <ScrollToTop />
+      <Logout />
       <Switch>
         <Route path="/top-artists">
           <h1>Top Artists</h1>
@@ -21,10 +22,7 @@ const Routes = () => {
           <h1>Playlists</h1>
         </Route>
         <Route path="/">
-          <>
-            <button onClick={logout}>Log Out</button>
-            <Profile />
-          </>
+          <Profile />
         </Route>
       </Switch>
     </Router>

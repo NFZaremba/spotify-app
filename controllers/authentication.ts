@@ -22,9 +22,17 @@ export const spotifyLogin = (_req: Request, res: Response) => {
   // set cookie
   res.cookie(stateKey, state);
 
+  // scope
+  const scope = [
+    "user-read-private",
+    "user-read-email",
+    "user-top-read",
+    "playlist-read-private",
+  ].join(" ");
+
   const queryParams = new URLSearchParams({
     state,
-    scope: "user-read-private user-read-email",
+    scope,
     client_id: CLIENT_ID,
     response_type: "code",
     redirect_uri: REDIRECT_URI,
