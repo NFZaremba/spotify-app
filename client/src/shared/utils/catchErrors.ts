@@ -1,7 +1,7 @@
-const catchErrors = (fn: () => void) => {
-  return async (): Promise<any> => {
+const catchErrors = (fn: Function) => {
+  return async ({ pageParam }: { pageParam?: string }): Promise<any> => {
     try {
-      return await fn();
+      return await fn({ pageParam });
     } catch (error) {
       console.error(error);
     }

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { Profile } from "../pages";
+import { Playlists, Profile, TopArtists } from "../pages";
 import Logout from "../pages/Logout";
+import TopTracks from "../pages/TopTracks";
 import ScrollToTop from "../shared/utils/scrollToTop";
 
 const Routes = () => {
@@ -10,16 +11,16 @@ const Routes = () => {
       <Logout />
       <Switch>
         <Route path="/top-artists">
-          <h1>Top Artists</h1>
+          <TopArtists />
         </Route>
         <Route path="/top-tracks">
-          <h1>Top Tracks</h1>
+          <TopTracks />
         </Route>
         <Route path="/playlists/:id">
           <h1>Playlist</h1>
         </Route>
         <Route path="/playlists">
-          <h1>Playlists</h1>
+          <Playlists />
         </Route>
         <Route path="/">
           <Profile />

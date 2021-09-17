@@ -3,7 +3,7 @@ import StyledGrid from "../../styles/grid";
 import { IPlaylist } from "../../types/spotify";
 
 interface IPlaylists {
-  playlists: IPlaylist[];
+  playlists: IPlaylist[] | undefined;
 }
 
 const Playlists = ({ playlists }: IPlaylists) => (

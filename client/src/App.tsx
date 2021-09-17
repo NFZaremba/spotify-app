@@ -5,12 +5,15 @@ import AxiosProvider from "./shared/utils/api";
 import Routes from "./routes";
 import GlobalStyle from "./shared/styles/globalStyles";
 import { Login } from "./pages";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 // Create a client
 const queryClient = new QueryClient();
 
 function App() {
   const accessToken = useAuth(window.location.search);
+
+  // queryClient.getQueryCache().clear();
 
   useEffect(() => {
     console.log(queryClient.getQueryCache().getAll());
@@ -25,6 +28,7 @@ function App() {
             {!accessToken ? <Login /> : <Routes />}
           </header>
         </div>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AxiosProvider>
   );

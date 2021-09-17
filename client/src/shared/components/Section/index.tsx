@@ -4,7 +4,7 @@ import StyledSection from "./styles";
 export interface ISection {
   children: React.ReactNode;
   title: string;
-  seeAllLink: string;
+  seeAllLink?: string;
   breadcrumb?: boolean;
 }
 

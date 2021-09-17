@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { getRefreshToken } from "../../services/spotify";
 import {
   getLocalAccessToken,
@@ -7,12 +7,11 @@ import {
   setAllLocalTokenParams,
 } from "../../services/token";
 import { localStorageKeys } from "../constants/spotify";
+import { Options } from "../types/spotify";
 import { useAxios } from "../utils/api";
 import catchErrors from "../utils/catchErrors";
 
-export interface ILocalStorageValues {
-  [key: string]: string | null;
-}
+const defaultOpt = { time_range: "short_term", limit: 20 };
 
 /**
  * auth hook that handles auth params
@@ -84,7 +83,8 @@ export const useGetCurrentProfile = () => {
 
       // Return the data from the Axios response
       return data;
-    })
+    }),
+    { refetchOnWindowFocus: false }
   );
 };
 
@@ -93,7 +93,7 @@ export const useGetCurrentProfile = () => {
  * https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
  * @returns {Promise}
  */
-export const useGetCurrentUserPlaylists = (limit = 20) => {
+export const useGetCurrentUserPlaylists = (limit: number = 20) => {
   const axios = useAxios();
 
   return useQuery(
@@ -102,7 +102,35 @@ export const useGetCurrentUserPlaylists = (limit = 20) => {
       const { data } = await axios.get(`/me/playlists?limit=${limit}`);
 
       return data;
-    })
+    }),
+    { refetchOnWindowFocus: false }
+  );
+};
+
+export const useGetAllUserPlaylists = (limit: number = 20) => {
+  const axios = useAxios();
+
+  return useInfiniteQuery(
+    ["playlists-infinite"],
+    catchErrors(async ({ pageParam }: { pageParam: string }) => {
+      const { data } = await axios.get(
+        pageParam ? pageParam : `/me/playlists?limit=${limit}`
+      );
+      return data;
+    }),
+    {
+      refetchOnWindowFocus: false,
+      getNextPageParam: (nextPage) => {
+        if (nextPage.next) return nextPage.next;
+        return false;
+      },
+      // transform the data
+      // merge pages
+      select: (data) => ({
+        pages: data?.pages.flatMap((page) => page.items),
+        pageParams: data.pageParams,
+      }),
+    }
   );
 };
 
@@ -112,18 +140,19 @@ export const useGetCurrentUserPlaylists = (limit = 20) => {
  * @param {string} time_range - 'short_term' (last 4 weeks) 'medium_term' (last 6 months) or 'long_term' (calculated from several years of data and including all new data as it becomes available). Defaults to 'short_term'
  * @returns {Promise}
  */
-export const useGetTopArtists = (time_range = "short_term") => {
+export const useGetTopArtists = (time_range: string = "short_term") => {
   const axios = useAxios();
 
   return useQuery(
-    "top-artists",
+    ["top-artists", time_range],
     catchErrors(async () => {
       const { data } = await axios.get(
         `/me/top/artists?time_range=${time_range}`
       );
 
       return data;
-    })
+    }),
+    { refetchOnWindowFocus: false }
   );
 };
 
@@ -133,17 +162,27 @@ export const useGetTopArtists = (time_range = "short_term") => {
  * @param {string} time_range - 'short_term' (last 4 weeks) 'medium_term' (last 6 months) or 'long_term' (calculated from several years of data and including all new data as it becomes available). Defaults to 'short_term'
  * @returns {Promise}
  */
-export const useGetTopTracks = (time_range = "short_term") => {
+export const useGetTopTracks = (options: Options = {}) => {
   const axios = useAxios();
+  const { time_range = "short_term", limit = 20 } = options;
 
   return useQuery(
-    "top-tracks",
+    ["top-tracks", time_range],
     catchErrors(async () => {
       const { data } = await axios.get(
         `/me/top/tracks?time_range=${time_range}`
       );
 
       return data;
-    })
+    }),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        if (limit) {
+          return { ...data, items: data.items.slice(0, limit) };
+        }
+        return { ...data };
+      },
+    }
   );
 };

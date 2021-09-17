@@ -31,3 +31,9 @@ export interface IProfile {
     total: number;
   };
 }
+
+// hooks
+export interface Options {
+  time_range?: string;
+  limit?: number;
+}

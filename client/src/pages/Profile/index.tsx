@@ -16,7 +16,8 @@ const Profile = () => {
   const profile = useGetCurrentProfile();
   const playlists = useGetCurrentUserPlaylists();
   const topArtists = useGetTopArtists();
-  const topTracks = useGetTopTracks();
+  const topTracks = useGetTopTracks({ limit: 10 });
+  console.log(topTracks);
 
   return (
     <div>
@@ -27,7 +28,7 @@ const Profile = () => {
         </Section>
 
         <Section title="Top tracks this month" seeAllLink="/top-tracks">
-          <TrackList tracks={topTracks?.data?.items.slice(0, 10)} />
+          <TrackList tracks={topTracks?.data?.items} />
         </Section>
 
         <Section title="Playlists" seeAllLink="/playlists">

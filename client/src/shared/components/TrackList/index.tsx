@@ -1,4 +1,4 @@
-import { IArtist, ITrack } from "../../types/spotify";
+import { ITrack } from "../../types/spotify";
 import { formatDuration } from "../../utils/formatDuration";
 import StyledTrackList from "./styles";
 
