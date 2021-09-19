@@ -5,6 +5,8 @@ import {
   useGetAudioFeaturesForTracks,
   useGetPlaylistById,
 } from "../../shared/hooks/spotify";
+import { IAudioFeatures, ITrack } from "../../shared/types/spotify";
+import StyledDropdown from "./Dropdown/styles";
 import Header from "./Header";
 
 const Playlist = () => {
@@ -14,19 +16,73 @@ const Playlist = () => {
   const playlist = useGetPlaylistById(id);
   const audioFeatures = useGetAudioFeaturesForTracks(audioIds);
 
+  const [sortValue, setSortValue] = useState("");
+  const sortOptions = ["danceability", "tempo", "energy"];
+
   const initialData = playlist?.data?.pages[0].initialData;
   const trackList = playlist?.data?.pages[0].allTracks;
-  //   console.log(audioFeatures);
+
   useEffect(() => {
     if (playlist.hasNextPage) {
       playlist.fetchNextPage();
     }
     if (playlist.hasNextPage === false) {
-      const tracklist = playlist?.data?.pages[0].trackIdList;
+      const trackIdList = playlist?.data?.pages[0].trackIdList;
       //   console.log(tracklist);
-      tracklist && setAudioIds(tracklist);
+      trackIdList && setAudioIds(trackIdList);
     }
   }, [playlist.data]);
+
+  useEffect(() => {
+    console.log(audioFeatures);
+    if (audioFeatures.hasNextPage) {
+      audioFeatures.fetchNextPage();
+    }
+  }, [audioFeatures.data]);
+
+  // Map over tracks and add audio_features property to each track
+  const tracksWithAudioFeatures = useMemo(() => {
+    if (!trackList || audioFeatures.data?.pages.length !== audioIds.length) {
+      return null;
+    }
+    const flattenAudioPages = audioFeatures.data?.pages.flatMap(
+      (page) => page.audio_features
+    );
+    console.log("flatten", flattenAudioPages);
+
+    return trackList.map((track) => {
+      const trackToAdd = track;
+
+      if (!track.audio_features) {
+        const audioFeaturesObj = flattenAudioPages.find((item) => {
+          if (!item || !track) {
+            return null;
+          }
+          return item.id === track.id;
+        });
+
+        trackToAdd["audio_features"] = audioFeaturesObj;
+      }
+
+      return trackToAdd;
+    });
+  }, [trackList, audioFeatures.data?.pages]);
+
+  console.log(tracksWithAudioFeatures);
+
+  // Sort tracks by audio feature to be used in template
+  const sortedTracks = useMemo(() => {
+    if (!tracksWithAudioFeatures) {
+      return null;
+    }
+
+    return [...tracksWithAudioFeatures].sort((a, b) => {
+      const aFeatures = a["audio_features"];
+      const bFeatures = b["audio_features"];
+
+      return bFeatures[sortValue] - aFeatures[sortValue];
+    });
+  }, [sortValue, tracksWithAudioFeatures]);
 
   return (
     <>
@@ -41,7 +97,24 @@ const Playlist = () => {
 
           <main>
             <Section title="Playlist" breadcrumb>
-              <TrackList tracks={trackList} />
+              <StyledDropdown active={!!sortValue}>
+                <label className="sr-only" htmlFor="order-select">
+                  Sort tracks
+                </label>
+                <select
+                  name="track-order"
+                  id="order-select"
+                  onChange={(e) => setSortValue(e.target.value)}
+                >
+                  <option value="">Sort tracks</option>
+                  {sortOptions.map((option, i) => (
+                    <option value={option} key={i}>
+                      {`${option.charAt(0).toUpperCase()}${option.slice(1)}`}
+                    </option>
+                  ))}
+                </select>
+              </StyledDropdown>
+              {sortedTracks && <TrackList tracks={sortedTracks} />}
             </Section>
           </main>
         </>

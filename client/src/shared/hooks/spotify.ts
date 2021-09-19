@@ -262,7 +262,7 @@ export const useGetPlaylistById = (playlistId: string) => {
  */
 export const useGetAudioFeaturesForTracks = (trackids: string[]) => {
   const axios = useAxios();
-  console.log(trackids[0]);
+
   // return useQueries(
   //   trackids.map((ids) => {
   //     return {
@@ -273,6 +273,7 @@ export const useGetAudioFeaturesForTracks = (trackids: string[]) => {
   //       }),
   //       refetchOnWindowFocus: false,
   //       enabled: trackids.length > 0,
+
   //       select: (data: any) => {
   //         return {
   //           audio_features: data.audio_features,
@@ -284,16 +285,19 @@ export const useGetAudioFeaturesForTracks = (trackids: string[]) => {
 
   return useInfiniteQuery(
     ["audio-feature"],
-    catchErrors(async ({ pageParam }: { pageParam: string }) => {
-      const { data } = await axios.get(`/audio-features?ids=${trackids[0]}`);
+    catchErrors(async ({ pageParam = 0 }: { pageParam: number }) => {
+      const { data } = await axios.get(
+        "/audio-features?ids=" + trackids[pageParam]
+      );
       return data;
     }),
     {
       refetchOnWindowFocus: false,
-      getNextPageParam: (nextPage) => {
-        console.log("nextPage", nextPage);
+      getNextPageParam: (lastPage, pages) => {
+        if (pages.length === trackids.length) return false;
+        return pages.length;
       },
-      enabled: Boolean(trackids),
+      enabled: Boolean(trackids.length),
     }
   );
 };

@@ -7,16 +7,6 @@ export interface IArtist {
   name: string;
 }
 
-export interface ITrack {
-  name: string;
-  album: {
-    name: string;
-    images: ImageType[];
-  };
-  artists: IArtist[];
-  duration_ms: number;
-}
-
 export interface IPlaylist {
   id: string;
   total: number;
@@ -36,6 +26,37 @@ export interface IProfile {
   followers: {
     total: number;
   };
+}
+
+export interface IAudioFeatures {
+  acousticness: number;
+  analysis_url: string;
+  danceability: number;
+  duration_ms: number;
+  energy: number;
+  id: string;
+  instrumentalness: number;
+  key: number;
+  liveness: number;
+  loudness: number;
+  mode: number;
+  speechiness: number;
+  tempo: number;
+  time_signature: number;
+  track_href: string;
+  type: string;
+  uri: string;
+}
+
+export interface ITrack {
+  name: string;
+  album: {
+    name: string;
+    images: ImageType[];
+  };
+  artists: IArtist[];
+  duration_ms: number;
+  audio_features: IAudioFeatures;
 }
 
 // hooks
