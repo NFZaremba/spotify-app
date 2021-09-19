@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const StyledHeader = styled.header<{ type: string }>`
+const StyledHeader = styled.header<{ type?: string }>`
   display: flex;
   align-items: flex-end;
   position: relative;

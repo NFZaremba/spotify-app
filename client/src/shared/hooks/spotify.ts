@@ -11,8 +11,6 @@ import { Options } from "../types/spotify";
 import { useAxios } from "../utils/api";
 import catchErrors from "../utils/catchErrors";
 
-const defaultOpt = { time_range: "short_term", limit: 20 };
-
 /**
  * auth hook that handles auth params
  * @param queryString
@@ -93,8 +91,9 @@ export const useGetCurrentProfile = () => {
  * https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
  * @returns {Promise}
  */
-export const useGetCurrentUserPlaylists = (limit: number = 20) => {
+export const useGetCurrentUserPlaylists = (options: Options = {}) => {
   const axios = useAxios();
+  const { limit = 20 } = options;
 
   return useQuery(
     "playlists",
@@ -107,6 +106,11 @@ export const useGetCurrentUserPlaylists = (limit: number = 20) => {
   );
 };
 
+/**
+ * Get all of Current User's Playlists
+ * https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
+ * @returns {Promise}
+ */
 export const useGetAllUserPlaylists = (limit: number = 20) => {
   const axios = useAxios();
 
@@ -140,8 +144,9 @@ export const useGetAllUserPlaylists = (limit: number = 20) => {
  * @param {string} time_range - 'short_term' (last 4 weeks) 'medium_term' (last 6 months) or 'long_term' (calculated from several years of data and including all new data as it becomes available). Defaults to 'short_term'
  * @returns {Promise}
  */
-export const useGetTopArtists = (time_range: string = "short_term") => {
+export const useGetTopArtists = (options: Options = {}) => {
   const axios = useAxios();
+  const { time_range = "short_term", limit = 20 } = options;
 
   return useQuery(
     ["top-artists", time_range],
@@ -149,10 +154,17 @@ export const useGetTopArtists = (time_range: string = "short_term") => {
       const { data } = await axios.get(
         `/me/top/artists?time_range=${time_range}`
       );
-
       return data;
     }),
-    { refetchOnWindowFocus: false }
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        if (limit) {
+          return { ...data, items: data.items.slice(0, limit) };
+        }
+        return { ...data };
+      },
+    }
   );
 };
 
@@ -183,6 +195,105 @@ export const useGetTopTracks = (options: Options = {}) => {
         }
         return { ...data };
       },
+    }
+  );
+};
+
+/**
+ * Get a Playlist
+ * https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-playlist
+ * @param {string} playlist_id - The Spotify ID for the playlist.
+ * @returns {Promise}
+ */
+export const useGetPlaylistById = (playlistId: string) => {
+  const axios = useAxios();
+
+  return useInfiniteQuery(
+    ["playlist"],
+    catchErrors(async ({ pageParam }: { pageParam: string }) => {
+      const { data } = await axios.get(
+        pageParam ? pageParam : `/playlists/${playlistId}`
+      );
+
+      return data;
+    }),
+    {
+      refetchOnWindowFocus: false,
+      getNextPageParam: (nextPage) => {
+        // if (nextPage) console.log("nextpage", nextPage);
+        if (nextPage?.tracks?.next) return nextPage?.tracks?.next;
+        if (nextPage?.next) return nextPage?.next;
+        return false;
+      },
+      // transform the data
+      // merge pages
+      select: (data) => ({
+        ...data,
+        pages: [
+          {
+            trackIdList: data?.pages.map((page) => {
+              const items = page.items ? page.items : page.tracks.items;
+              return items
+                .map(({ track }: { track: { id: string } }) => track.id)
+                .join(",");
+            }),
+            initialData: { ...data.pages[0] },
+            allTracks: data?.pages
+              .flatMap((page) => {
+                if (page.items) {
+                  return page.items;
+                }
+                return page.tracks.items;
+              })
+              .map(({ track }) => track),
+          },
+        ],
+        pageParams: data.pageParams,
+      }),
+    }
+  );
+};
+
+/**
+ * Get Audio Features for Several Tracks
+ * https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-several-audio-features
+ * @param {string} ids - A comma-separated list of the Spotify IDs for the tracks
+ * @returns {Promise}
+ */
+export const useGetAudioFeaturesForTracks = (trackids: string[]) => {
+  const axios = useAxios();
+  console.log(trackids[0]);
+  // return useQueries(
+  //   trackids.map((ids) => {
+  //     return {
+  //       queryKey: ["audio-feature", ids],
+  //       queryFn: catchErrors(async () => {
+  //         const { data } = await axios.get(`/audio-features?ids=${ids}`);
+  //         return data;
+  //       }),
+  //       refetchOnWindowFocus: false,
+  //       enabled: trackids.length > 0,
+  //       select: (data: any) => {
+  //         return {
+  //           audio_features: data.audio_features,
+  //         };
+  //       },
+  //     };
+  //   })
+  // );
+
+  return useInfiniteQuery(
+    ["audio-feature"],
+    catchErrors(async ({ pageParam }: { pageParam: string }) => {
+      const { data } = await axios.get(`/audio-features?ids=${trackids[0]}`);
+      return data;
+    }),
+    {
+      refetchOnWindowFocus: false,
+      getNextPageParam: (nextPage) => {
+        console.log("nextPage", nextPage);
+      },
+      enabled: Boolean(trackids),
     }
   );
 };

@@ -22,6 +22,12 @@ export interface IPlaylist {
   total: number;
   images: ImageType[];
   name: string;
+  followers?: {
+    total: number;
+  };
+  tracks?: {
+    total: number;
+  };
 }
 
 export interface IProfile {

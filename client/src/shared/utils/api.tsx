@@ -62,10 +62,11 @@ export const AxiosProvider = ({
             originalConfig._retry = true;
 
             try {
+              console.log("Refreshing Token");
               const { data } = await axios.get(
                 `/refresh_token?refresh_token=${getLocalRefreshToken()}`
               );
-
+              console.log("Refreshing Token - Completed");
               // Update localStorage values
               updateLocalAccessToken(data.access_token);
               setLocalTimeStamp();

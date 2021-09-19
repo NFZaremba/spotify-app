@@ -1,5 +1,5 @@
 import { IPlaylist, IProfile } from "../../types/spotify";
-import StyledHeader from "./styles";
+import StyledHeader from "../../styles/header";
 
 interface IHeader {
   profile: IProfile;

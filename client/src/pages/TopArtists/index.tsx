@@ -6,7 +6,7 @@ const TopArtists = () => {
   const [activeRange, setActiveRange] = useState<"short" | "medium" | "long">(
     "short"
   );
-  const topArtists = useGetTopArtists(`${activeRange}_term`);
+  const topArtists = useGetTopArtists({ time_range: `${activeRange}_term` });
 
   return (
     <main>

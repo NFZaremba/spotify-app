@@ -6,7 +6,10 @@ const TopTracks = () => {
   const [activeRange, setActiveRange] = useState<"short" | "medium" | "long">(
     "short"
   );
-  const topTracks = useGetTopTracks({ time_range: `${activeRange}_term` });
+  const topTracks = useGetTopTracks({
+    time_range: `${activeRange}_term`,
+    limit: 10,
+  });
 
   return (
     <main>
@@ -17,7 +20,7 @@ const TopTracks = () => {
         />
 
         {topTracks && topTracks?.data?.items && (
-          <TrackList tracks={topTracks?.data?.items.slice(0, 10)} />
+          <TrackList tracks={topTracks?.data?.items} />
         )}
       </Section>
     </main>

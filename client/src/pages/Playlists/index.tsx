@@ -6,13 +6,12 @@ import { useGetAllUserPlaylists } from "../../shared/hooks/spotify";
 const Playlists = () => {
   const playlists = useGetAllUserPlaylists();
 
-  console.log(playlists);
-
   useEffect(() => {
     if (playlists.hasNextPage) {
       playlists.fetchNextPage();
     }
   }, [playlists]);
+  // console.log(playlists);
 
   return (
     <main>
