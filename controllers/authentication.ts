@@ -8,6 +8,7 @@ import { generateRandomString } from "../utils/generateRandomString";
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const FRONTEND_URI = process.env.FRONTEND_URI;
 
 /**
  * Login
@@ -93,7 +94,7 @@ export const spotifyCallback = catchErrors(
       }).toString();
 
       // redirect to react app
-      res.redirect(`http://localhost:3000/?${queryParams}`);
+      res.redirect(`${FRONTEND_URI}/?${queryParams}`);
 
       // pass tokens and query params
     } else {

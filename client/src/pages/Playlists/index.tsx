@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Section } from "../../shared/components";
+import { Loader, Section } from "../../shared/components";
 import { Playlists as PlaylistGrid } from "../../shared/components/";
 import { useGetAllUserPlaylists } from "../../shared/hooks/spotify";
 
@@ -11,7 +11,10 @@ const Playlists = () => {
       playlists.fetchNextPage();
     }
   }, [playlists]);
-  // console.log(playlists);
+
+  if (playlists.isLoading) {
+    return <Loader />;
+  }
 
   return (
     <main>

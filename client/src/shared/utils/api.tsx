@@ -6,7 +6,7 @@ import {
   getLocalRefreshToken,
   setLocalTimeStamp,
   updateLocalAccessToken,
-} from "../../services/token";
+} from "../../services/token.service";
 
 const AxiosContext = createContext<AxiosInstance | undefined>(undefined);
 

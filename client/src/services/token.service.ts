@@ -1,5 +1,5 @@
-import { localStorageKeys } from "../../shared/constants/spotify";
-import useLocalStorage from "../../shared/hooks/useLocalStorage";
+import { localStorageKeys } from "../shared/constants/spotify";
+import useLocalStorage from "../shared/hooks/useLocalStorage";
 
 export const getLocalRefreshToken = () => {
   const refreshToken = useLocalStorage.get({

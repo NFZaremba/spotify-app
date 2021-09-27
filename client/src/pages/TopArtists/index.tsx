@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Artists, Section, TimeRangeButtons } from "../../shared/components";
+import {
+  Artists,
+  Loader,
+  Section,
+  TimeRangeButtons,
+} from "../../shared/components";
 import { useGetTopArtists } from "../../shared/hooks/spotify";
 
 const TopArtists = () => {
@@ -7,6 +12,10 @@ const TopArtists = () => {
     "short"
   );
   const topArtists = useGetTopArtists({ time_range: `${activeRange}_term` });
+
+  if (topArtists.isLoading) {
+    return <Loader />;
+  }
 
   return (
     <main>

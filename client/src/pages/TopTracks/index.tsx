@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Section, TimeRangeButtons, TrackList } from "../../shared/components";
+import {
+  Loader,
+  Section,
+  TimeRangeButtons,
+  TrackList,
+} from "../../shared/components";
 import { useGetTopTracks } from "../../shared/hooks/spotify";
 
 const TopTracks = () => {
@@ -10,6 +15,10 @@ const TopTracks = () => {
     time_range: `${activeRange}_term`,
     limit: 10,
   });
+
+  if (topTracks.isLoading) {
+    return <Loader />;
+  }
 
   return (
     <main>

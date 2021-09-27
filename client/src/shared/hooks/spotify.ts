@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useInfiniteQuery, useQuery } from "react-query";
-import { getRefreshToken } from "../../services/spotify";
+import { getRefreshToken } from "../../services/spotify.service";
 import {
   getLocalAccessToken,
   hasTokenExpired,
   setAllLocalTokenParams,
-} from "../../services/token";
+} from "../../services/token.service";
 import { localStorageKeys } from "../constants/spotify";
 import { Options } from "../types/spotify";
 import { useAxios } from "../utils/api";
@@ -262,26 +262,6 @@ export const useGetPlaylistById = (playlistId: string) => {
  */
 export const useGetAudioFeaturesForTracks = (trackids: string[]) => {
   const axios = useAxios();
-
-  // return useQueries(
-  //   trackids.map((ids) => {
-  //     return {
-  //       queryKey: ["audio-feature", ids],
-  //       queryFn: catchErrors(async () => {
-  //         const { data } = await axios.get(`/audio-features?ids=${ids}`);
-  //         return data;
-  //       }),
-  //       refetchOnWindowFocus: false,
-  //       enabled: trackids.length > 0,
-
-  //       select: (data: any) => {
-  //         return {
-  //           audio_features: data.audio_features,
-  //         };
-  //       },
-  //     };
-  //   })
-  // );
 
   return useInfiniteQuery(
     ["audio-feature"],

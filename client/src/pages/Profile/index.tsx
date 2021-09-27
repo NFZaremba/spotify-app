@@ -1,6 +1,7 @@
 import {
   Artists,
   Header,
+  Loader,
   Playlists,
   Section,
   TrackList,
@@ -17,6 +18,15 @@ const Profile = () => {
   const playlists = useGetCurrentUserPlaylists({ limit: 10 });
   const topArtists = useGetTopArtists({ limit: 10 });
   const topTracks = useGetTopTracks({ limit: 10 });
+
+  if (
+    profile.isLoading ||
+    playlists.isLoading ||
+    topArtists.isLoading ||
+    topTracks.isLoading
+  ) {
+    return <Loader />;
+  }
 
   return (
     <div>

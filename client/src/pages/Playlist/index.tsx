@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Section, TrackList } from "../../shared/components";
+import { Loader, Section, TrackList } from "../../shared/components";
 import {
   useGetAudioFeaturesForTracks,
   useGetPlaylistById,
 } from "../../shared/hooks/spotify";
-import { IAudioFeatures, ITrack } from "../../shared/types/spotify";
 import StyledDropdown from "./Dropdown/styles";
 import Header from "./Header";
 
@@ -34,7 +33,6 @@ const Playlist = () => {
   }, [playlist.data]);
 
   useEffect(() => {
-    console.log(audioFeatures);
     if (audioFeatures.hasNextPage) {
       audioFeatures.fetchNextPage();
     }
@@ -48,7 +46,6 @@ const Playlist = () => {
     const flattenAudioPages = audioFeatures.data?.pages.flatMap(
       (page) => page.audio_features
     );
-    console.log("flatten", flattenAudioPages);
 
     return trackList.map((track) => {
       const trackToAdd = track;
@@ -67,8 +64,6 @@ const Playlist = () => {
       return trackToAdd;
     });
   }, [trackList, audioFeatures.data?.pages]);
-
-  console.log(tracksWithAudioFeatures);
 
   // Sort tracks by audio feature to be used in template
   const sortedTracks = useMemo(() => {
@@ -114,7 +109,7 @@ const Playlist = () => {
                   ))}
                 </select>
               </StyledDropdown>
-              {sortedTracks && <TrackList tracks={sortedTracks} />}
+              {sortedTracks ? <TrackList tracks={sortedTracks} /> : <Loader />}
             </Section>
           </main>
         </>

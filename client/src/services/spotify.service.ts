@@ -1,7 +1,7 @@
 import axios from "axios";
-import { localStorageKeys } from "../../shared/constants/spotify";
-import useLocalStorage from "../../shared/hooks/useLocalStorage";
-import { setLocalTimeStamp, updateLocalAccessToken } from "../token";
+import { localStorageKeys } from "../shared/constants/spotify";
+import useLocalStorage from "../shared/hooks/useLocalStorage";
+import { setLocalTimeStamp, updateLocalAccessToken } from "./token.service";
 
 /**
  * Use the refresh token in localStorage to hit the /refresh_token endpoint

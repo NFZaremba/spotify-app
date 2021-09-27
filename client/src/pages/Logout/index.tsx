@@ -1,5 +1,5 @@
-import styled from "styled-components/macro";
-import { logout } from "../../services/spotify";
+import styled from "styled-components";
+import { logout } from "../../services/spotify.service";
 
 const StyledLogoutButton = styled.button`
   position: absolute;
